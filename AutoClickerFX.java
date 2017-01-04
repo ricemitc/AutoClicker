@@ -2,6 +2,7 @@ package tabs;
 
 import java.awt.Robot;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 
 import javafx.application.Application;
 import javafx.concurrent.Task;
@@ -12,6 +13,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -29,6 +31,7 @@ public class AutoClickerFX extends Application {
 	static int delay = 4000;
 
 	TextField numClicksField, intervalField, delayField;
+	CheckBox holdControl;
 
 	 @Override
 	    public void start(Stage primaryStage) {
@@ -42,7 +45,6 @@ public class AutoClickerFX extends Application {
 		 	Text scenetitle = new Text("Auto-Clicker");
 	        scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 30));
 	        grid.add(scenetitle, 0, 0, 2, 1);
-
 
 	        Label numClicksLabel = new Label("Number of Clicks:");
 	        grid.add(numClicksLabel, 0, 1);
@@ -59,9 +61,13 @@ public class AutoClickerFX extends Application {
 	        Label delayLabel = new Label("Delay:");
 	        grid.add(delayLabel, 0, 3);
 
-
 	        delayField = new TextField(delay + "");
 	        grid.add(delayField, 1, 3);
+
+	        holdControl = new CheckBox("Control On");
+	        holdControl.setSelected(true);
+	        grid.add(holdControl, 0, 4);
+
 
 	        Button btn = new Button();
 	        btn.setText("Begin Clicking");
@@ -93,13 +99,21 @@ public class AutoClickerFX extends Application {
 	                        	Robot robot = new Robot();
 	                            Thread.sleep(currentDelay);
 
+	                            if(holdControl.isSelected()) {
+	                            	robot.keyPress(KeyEvent.VK_CONTROL);
+	                            }
+
 	                			for( int i=0; i<currentNumClicks; i++ ) {
 	                				robot.mousePress(InputEvent.BUTTON1_MASK);
 	                				robot.mouseRelease(InputEvent.BUTTON1_MASK);
 
 	                				Thread.sleep(currentInterval);
 	                			}
-	                        }
+
+	                			if(holdControl.isSelected()) {
+	                				robot.keyRelease(KeyEvent.VK_CONTROL);
+	                			}
+	                		}
 	                        catch (InterruptedException e) {
 	                        }
 	                        return null;
